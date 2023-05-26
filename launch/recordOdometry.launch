@@ -1,0 +1,38 @@
+<launch>
+
+    <arg name="project" default="lio_sam"/>
+
+    <!--- Save Point Cloud Map 
+    -->
+    <node pkg="$(arg project)" type="vlp16_points_listener.py" name="$(arg project)_listenSave_ptCloudMap" respawn="true" output="screen">
+        <param name="filename" value="/home/arbocensus/Data/CMU/PaperData/tar_results/liosam_simtime/Gascola_collect_3/PointCloud"/>
+        <remap from="/ptCloud_save" to="/lio_sam/mapping/map_global" />
+    </node>
+
+    <!--- Save Odometry GPS 
+    -->
+    <node pkg="$(arg project)" type="odom_listener.py" name="$(arg project)_listenSave_Odom_NavSat" respawn="true" output="screen">
+        <param name="filename" value="/home/arbocensus/Data/CMU/PaperData/tar_results/liosam_simtime/Gascola_collect_3/Odom_gps"/>
+        <remap from="/odom_save" to="/odometry/gps" />
+    </node>
+
+    <!--- Save Odometry LiDAR 
+    -->
+    <node pkg="$(arg project)" type="odom_listener.py" name="$(arg project)_listenSave_Odom_LiDAR" respawn="true" output="screen">
+        <param name="filename" value="/home/arbocensus/Data/CMU/PaperData/tar_results/liosam_simtime/Gascola_collect_3/Odom_lidar"/>
+        <remap from="/odom_save" to="/lio_sam/mapping/odometry_incremental" />
+    </node>
+
+    <!--- Save Odometry Camera 
+    <node pkg="$(arg project)" type="odom_listener.py" name="$(arg project)_listenSave_Odom_Camera" respawn="true" output="screen">
+        <param name="filename" value="/home/arbocensus/Data/CMU/liosam_simtime/collect4/MappingResults/Odom_camera/"/>
+        <remap from="/odom_save" to="/lio_sam_vins/odometry" />
+    </node>
+    -->
+
+    <node pkg="$(arg project)" type="odom_listener.py" name="$(arg project)_listenSave_Odom_AftMapped" respawn="true" output="screen">
+        <param name="filename" value="/home/arbocensus/Data/CMU/PaperData/tar_results/liosam_simtime/Gascola_collect_3/Odom_aftMapped"/>
+        <remap from="/odom_save" to="/lio_sam/mapping/odometry" />
+    </node>
+
+</launch>

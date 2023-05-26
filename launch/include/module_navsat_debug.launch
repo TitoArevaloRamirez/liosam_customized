@@ -1,0 +1,28 @@
+<launch>
+
+    <arg name="project" default="lio_sam"/>
+    
+    <rosparam file="$(find lio_sam)/config/params_new_payload_outdoors.yaml" command="load" /> <!--params_new_payload_outdoors, params_new_payload_ned, params_new_payload_enu-->
+    
+    <env name="ROSCONSOLE_CONFIG_FILE" value="$(find lio_sam)/launch/include/rosconsole/rosconsole_debug.conf"/>
+    
+    <!-- EKF GPS-->
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_gps" respawn="true" output="screen">
+        <remap from="odometry/filtered" to="odometry/navsat" />
+    </node>
+
+    <!-- Navsat -->
+    <node pkg="robot_localization" type="navsat_transform_node" name="navsat" respawn="true" output="screen">
+        <!-- <rosparam param="datum">[42.35893211, -71.09345588, 0.0, world, base_link]</rosparam> -->
+        <remap from="imu/data" to="/vectornav/imu_enu" />
+        <remap from="gps/fix" to="/gps/fix" />
+        <remap from="odometry/filtered" to="odometry/navsat" />
+    </node>
+    
+    <node pkg="$(arg project)" type="gps_renameFrameID.py" name="$(arg project)_renameGPS_FrameID" output="screen">
+        <remap from="/gps_save" to="/dji_sdk/gps_position" />    
+    </node>
+    
+    <include file="$(find lio_sam)/launch/include/module_robot_state_publisher_new.launch" />    
+
+</launch>

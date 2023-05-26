@@ -1,0 +1,43 @@
+<launch>
+
+    <arg name="project" default="lio_sam"/>
+    
+    <!-- Parameters -->
+    <rosparam file="$(find lio_sam)/config/params_new_payload_outdoors.yaml" command="load" /> <!--params_new_payload_outdoors, params_new_payload_ned, params_new_payload_enu-->
+
+        <!--- LOAM 
+        -->
+    <include file="$(find lio_sam)/launch/include/module_loam.launch" />
+
+        <!--- VINS 
+    <include file="$(find lio_sam)/launch/include/module_vins.launch" />
+        -->
+
+    <!--- Robot State TF -->
+    <include file="$(find lio_sam)/launch/include/module_robot_state_publisher_new.launch" />
+
+    <!--- Run Navsat -->
+    <include file="$(find lio_sam)/launch/include/module_navsat.launch" />
+    
+                <!-- 
+    <node pkg="$(arg project)" type="gps_odometry_fix.py" name="$(arg project)_odometry_gps_fix" output="screen">
+    </node>    
+        -->
+
+    <node pkg="$(arg project)" type="odom2rpy.py" name="odom2rpy_liosam" output="screen">
+        <remap from="/odom_q" to="/lio_sam/mapping/odometry_incremental" />
+        <remap from="/rpy" to="/lio_sam/mapping/odometry_incremental_rpy" />
+    </node>    
+
+    <!--- Run Rviz
+        -->
+    <include file="$(find lio_sam)/launch/include/module_rviz.launch" />
+
+    <!--- Save Point Cloud Map 
+    <node pkg="$(arg project)" type="vlp16_points_listener.py" name="$(arg project)_listenSave_ptCloudMap" respawn="true" output="screen">
+        <param name="filename" value="/home/arbocensus/Data/CMU/MappingResults/PointCloud/"/>
+        <remap from="/ptCloud_save" to="/lio_sam/mapping/map_global" />
+    </node>
+    -->
+
+</launch>

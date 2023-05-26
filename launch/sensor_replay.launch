@@ -1,0 +1,48 @@
+<launch>
+
+    <arg name="files" default="/hdd/projects/safe_forest/site_Oporto_Winnie/08_17_22_collect_1_merged.bag" />
+    <arg name="s" default="5" />
+    <arg  name="convert2enu" default ="false"/>
+    <arg  name="convert2navsat" default ="false"/>
+    <node pkg="rosbag" type="play" name="player" output="screen" args="$(arg files) -s $(arg s) --clock"/> <!--/dji_sdk/gps_position:=/gps-->
+
+    
+    <group ns ="left">
+    <group ns ="camera">
+      <!-- <node pkg="image_proc" type="image_proc" name="left_image_proc" output="screen" >
+      	    <remap from="camera_info" to="camera_info_usr" />
+      </node> -->
+    <!-- Debayering nodelet -->
+    <node pkg="nodelet" type="nodelet" name="image_proc_debayer"
+          args="standalone image_proc/debayer">
+    </node>
+    </group>
+    </group>
+
+
+    <group ns ="right">
+    <group ns ="camera">
+      <!-- <node pkg="image_proc" type="image_proc" name="right_image_proc" output="screen" >
+      <remap from="camera_info" to="camera_info_usr" />
+      </node> -->
+    <!-- Debayering nodelet -->
+    <node pkg="nodelet" type="nodelet" name="image_proc_debayer"
+          args="standalone image_proc/debayer ">        
+        <remap from="/left/image_raw" to="/left/camera/image_raw"/>  
+    </node>
+    </group>    
+    </group>    
+
+	<group if="$(arg convert2enu)">
+	  <node pkg="ned_enu_tf" type="ned2enu" name="enu_transform" output="screen"/>
+	</group>    
+	
+	<group if="$(arg convert2navsat)">
+	  <node pkg="ned_enu_tf" type="imu_navsat" name="imu_navsat_transform" output="screen"/>
+	</group>	
+	
+    <include file="/opt/ros/noetic/share/velodyne_pointcloud/launch/VLP-32C_points.launch" >
+    <arg name="min_range" value="2.0" /> <!--default 0.4-->
+    </include>
+    
+</launch>    

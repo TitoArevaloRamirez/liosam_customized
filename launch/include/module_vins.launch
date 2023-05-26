@@ -1,0 +1,25 @@
+<launch>
+
+    <arg name="project" default="lio_sam"/>
+    
+    <!--
+    <node pkg="$(arg project)" type="$(arg project)_imuPreintegration"   name="$(arg project)_imuPreintegration"    output="screen" 	respawn="true"/>
+
+    -->
+
+        <!-- Parameters 
+    <rosparam file="$(find lio_sam)/config/euroc_stereo_imu_config.yaml" command="load" /> 
+    <param name="config_file" type="string" value="$(find lio_sam)/config/euroc_stereo_imu_config.yaml" />
+        -->
+
+    <node pkg="$(arg project)" type="vins_node" name="$(arg project)_vins" output="screen" respawn="true" args="$(find lio_sam)/config/euroc_stereo_imu_config.yaml"/>
+
+    <!--
+        -->
+    <node pkg="$(arg project)" type="loop_fusion_node" name="$(arg project)_loopFusion" output="screen" respawn="true" args="$(find lio_sam)/config/euroc_stereo_imu_config.yaml"/>
+        
+
+
+
+    
+</launch>
